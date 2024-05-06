@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+      "target": "es2017", // It needs to be at least es2017. Otherwise the pyodide_worker is transpiled with extra variables!!
+      "lib": [
+        "dom",
+        "dom.iterable",
+        "esnext"
+      ],
+      "declaration": true,
+      "allowJs": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "noFallthroughCasesInSwitch": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "jsx": "react-jsx",
+      "outDir": "dist/",
+      // For webpack
+      "sourceMap": true
+    },
+    "include": [
+      "src"
+    ],
+  }
