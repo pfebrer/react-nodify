@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "Pol Febrer",
   "main": "dist/index.js",
-  "homepage": "./",
+  "homepage": "https://github.com/pfebrer/react-nodify",
   "scripts": {
     "build": "npx tsc"
   },
