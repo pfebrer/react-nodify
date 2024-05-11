@@ -360,7 +360,7 @@ class PyodidePythonApi extends PythonApi {
         0: "Not initialized",
         100: "Not connected",
         101: "[1 / 3] Loading pyodide",
-        102: "[2 / 3] Loading sisl and all dependencies",
+        102: "[2 / 3] Loading dependencies",
         103: "[3 / 3] Importing packages and initializing session",
         200: "Connected",
     }
@@ -403,7 +403,7 @@ class PyodidePythonApi extends PythonApi {
             type: "loadRuntime", 
             packages: this.apiSettings.packages || [], 
             micropipPackages: this.apiSettings.micropipPackages || [], 
-            init_script: this.apiSettings.init_script || ""
+            session_cls: this.apiSettings.session_cls || ""
         })
 
     }

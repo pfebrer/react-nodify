@@ -24,7 +24,7 @@ async function loadPackages(packages) {
     return pyodide.loadPackage(packages)
 }
 
-async function loadRuntime(packages=[], micropipPackages=[], init_script="") {
+async function loadRuntime(packages=[], micropipPackages=[], session_cls="nodify.server.session.Session") {
 
     setStatus(101)
 
@@ -35,26 +35,50 @@ async function loadRuntime(packages=[], micropipPackages=[], init_script="") {
     setStatus(102)
 
     const pypi_packages = pyodide.loadPackage("micropip").then(() => {
-        console.log("Importing micropip")
         const micropip = pyodide.pyimport("micropip")
-        console.log("Imported micropip")
         globalThis.micropip = micropip
 
-        return Promise.all([
-            micropip.install("nodify"),
-            micropip.install(micropipPackages || [])
-        ])
+        const promises = [
+            micropip.install(["nodify", "simplejson", "black", "isort", "numpy"]),
+        ]
+        if (micropipPackages) {
+            promises.push(micropip.install(micropipPackages))
+        }
+
+        return Promise.all(promises)
     })
 
-    const pyodidePackages = Promise.all([
-        pyodide.loadPackage(packages || []),
-        //pyodide.loadPackage('./sisl-0.9.8.dev2240+g8abff51ce4-cp312-cp312-emscripten_3_1_52_wasm32.whl')
-    ])
+    const pyodidePackPromises = []
+    if (packages) {
+        pyodidePackPromises.push(pyodide.loadPackage(packages))
+    }
+
+    const pyodidePackages = Promise.all(pyodidePackPromises)
 
     await pyodidePackages
     await pypi_packages
 
     setStatus(103)
+
+    const session_path = session_cls.split(".")
+    const session_module = session_path.slice(0, -1).join(".")
+    const session_class = session_path.slice(-1)[0]
+
+    const init_script = `
+    import nodify
+    from nodify import Node
+    from nodify.server.pyodide import for_js as _nodify_for_js
+
+    # Patch Node with a dummy then attribute, because pyodide tries to call it
+    # when converting a node to JS. If we don't patch it, when getting "then" pyodide
+    # will create a "GetAttrNode" and then try to call it, which is catastrophic :)
+    Node.then = None
+
+    # Everything is ready, import the session class and initialize a session.
+    from ${session_module} import ${session_class}
+
+    session = ${session_class}()
+    `
 
     pyodide.runPython(init_script)
 
@@ -115,7 +139,7 @@ self.onmessage = async (event) => {
     console.log("MESSAGE", event.data)
 
     if (event.data.type === "loadRuntime") {
-        await loadRuntime(event.data.packages || [], event.data.micropipPackages || [], event.data.init_script || "")
+        await loadRuntime(event.data.packages || [], event.data.micropipPackages || [], event.data.session_cls || "nodify.server.session.Session")
     } else if (event.data.type === "sessionMethod") {
         const {methodName, args, kwargs} = event.data
 

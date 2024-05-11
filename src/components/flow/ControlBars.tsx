@@ -334,13 +334,13 @@ export const NewNodesSideBar = (props: NodesSideBarProps) => {
                 startIcon={<ArrowBack />}
                 onClick={() => onRemoveNodeId()}>BACK TO NODES</Button>}
             </div>
-            <div style={{display: "flex", paddingTop: 10}}>
-            <div style={{flex: 1, display: outputNodeId ? "none": "flex", flexDirection: "column"}}>
+            <div style={{display: "flex", paddingTop: 10, height: "100%"}}>
+            <div style={{ flex: 1, height: "100%", overflow: "hidden", display: outputNodeId ? "none": "flex", flexDirection: "column"}}>
                 <Typography variant="h6" align='center'>Existing nodes</Typography>
                 <Typography align="center">(click to add to flow)</Typography>
                 <div className="no-scrollbar" style={{overflowY: "scroll", width: "100%", flex: 1, padding: 10}}>
                 
-                <Accordion>
+                    <Accordion >
                     <AccordionSummary
                         expandIcon={<ExpandMore />}
                         sx={{backgroundColor: "lavender"}}
